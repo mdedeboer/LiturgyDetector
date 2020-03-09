@@ -1,4 +1,4 @@
-﻿<#
+<#
     .SYNOPSIS
     The idea of this script is to take a humanly structured order of worship and convert into an object oriented ordered order of worship.
     Why?  
@@ -43,18 +43,25 @@
 #******************************
 #  Settings 
 #******************************
+$pptxpath = 'C:\Users\mdede\Documents\Church\Sound'
+$SongBoardTemplatePPTX = Join-path $pptxpath -ChildPath 'SongBoardTemplate.pptx'
+$AMMainTemplatePPTX = Join-Path $pptxpath -ChildPath 'MainPPTXTemplate-AM.pptx'
+$PMMainTemplatePPTX = Join-Path $pptxpath -ChildPath 'MainPPTXTemplate-PM.pptx'
+<#
 $SongBoardTemplatePPTX = Join-path $PSScriptRoot -ChildPath 'SongBoardTemplate.pptx'
 $AMMainTemplatePPTX = Join-Path $PSScriptRoot -ChildPath 'MainPPTXTemplate-AM.pptx'
 $PMMainTemplatePPTX = Join-Path $PSScriptRoot -ChildPath 'MainPPTXTemplate-PM.pptx'
-$validSongs = @{'Psalm'='P.';'Hymn'='H.';'P'='P.';'Ps'='P.';'H'='H.'}
+#>
+$validSongs = @{'Psalm'='P.';'Hymn'='H.';'P'='P.';'Ps'='P.';'H'='H.';'Hy.'='H.'}
 $script:LiturgyTypes = @('Reading','Singing','Display Text','Theme','Points')
 $boolGenerateSongBoard = $true
 $BoolGenerateMainPPTX = $true
 $boolMainPPTXIncludeLyrics = $false
-$CrossWayV3APIKey = '012345679ABCDEF0123456789ABCDEF012345678'
+$CrossWayV3APIKey = '62d004c9b0ad0cb3dbd877f1121027d0b8cfb9dd'
 
 #For purposes of the valid readings list, ps is the same as ps.  do not include both as ps is a substring of ps. and causes ambiguity.
-$validReadings = @{'Genesis'='Gen.';'Exodus'='Ex.';'Leviticus'='Lev.';'Numbers'='Num.';'Deuteronomy'='Deut.';'Joshua'='Josh.';'Judges'='Judg.';'Ruth'='Ruth';'1 Sam'='1 Sam.';'2 Sam'='2 Sam.';'1 Kings'='1 Kings';'2 Kings'='2 Kings';'1 Chron'='1 Chron.';'2 Chron'='2 Chron.';'Ezra'='Ezra';'Nehemiah'='Neh.';'Esther'='Est.';'Job'='Job';'Ps'='Ps.';'Prov.'='Prov.';'Proverbs'='Prov.';'Ecclesiastes'='Eccles.';'Eccl'='Eccles.';'Song of Solomon'='Song.';'Isaiah'='Isa.';'Jeremiah'='Jer.';'Lamentations'='Lam.';'Ezekiel'='Ezek.';'Daniel'='Dan.';'Hosea'='Hos.';'Joel'='Joel';'Amos'='Amos';'Obadiah'='Obad.';'Jonah'='Jonah';'Michah'='Mic.';'Nahum'='Nah.';'Habakkuk'='Hab.';'Zephaniah'='Zeph.';'Haggai'='Hag.';'Zechariah'='Zech.';'Malachi'='Mal.';'Matthew'='Matt.';'Mt'='Matt.';'Mark'='Mark';'Luke'='Luke';'John'='John';'Acts'='Acts';'Romans'='Rom.';'1 Cor'='1 Cor.';'2 Cor'='2 Cor.';'Galatians'='Gal.';'Ephesians'='Eph.';'Philippians'='Phil.';'Colossians'='Col.';'1 Thessalonians'='1 Thess.';'2 Thessalonians'='2 Thess.';'1 Timothy'='1 Tim.';'2 Timothy'='2 Tim.';'Titus'='Titus';'Philemon'='Philem.';'Hebrews'='Heb.';'Heb'='Heb.';'James'='James';'1 Peter'='1 Pet.';'2 Peter'='2 Pet.';'1 John'='1 John';'2 John'='2 John';'3 John'='John';'Jude'='Jude';'Revelation'='Rev.';'Belgic Confession'='B.C.';'Heidelberg Catechism'='L.D.';'Canons of Dort'='C.D.';"Lord's Day"='L.D.'; "Lord’s Day"='L.D.'; 'Lords Day'='L.D.'; "Apostle's Creed"="Apostle's Creed";'Apostles Creed'="Apostles Creed"; 'Nicene Creed'='Nicene Creed';'Athanasian Creed'='Athanasian Creed'}
+#$validReadings = @{'Genesis'='Gen.';'Exodus'='Ex.';'Leviticus'='Lev.';'Numbers'='Num.';'Deuteronomy'='Deut.';'Joshua'='Josh.';'Judges'='Judg.';'Ruth'='Ruth';'1 Sam'='1 Sam.';'2 Sam'='2 Sam.';'1 Kings'='1 Kings';'2 Kings'='2 Kings';'1 Chron'='1 Chron.';'2 Chron'='2 Chron.';'Ezra'='Ezra';'Nehemiah'='Neh.';'Esther'='Est.';'Job'='Job';'Ps'='Ps.';'Prov.'='Prov.';'Proverbs'='Prov.';'Ecclesiastes'='Eccles.';'Eccl'='Eccles.';'Song of Solomon'='Song.';'Isaiah'='Isa.';'Jeremiah'='Jer.';'Lamentations'='Lam.';'Ezekiel'='Ezek.';'Daniel'='Dan.';'Hosea'='Hos.';'Joel'='Joel';'Amos'='Amos';'Obadiah'='Obad.';'Jonah'='Jonah';'Michah'='Mic.';'Nahum'='Nah.';'Habakkuk'='Hab.';'Zephaniah'='Zeph.';'Haggai'='Hag.';'Zechariah'='Zech.';'Malachi'='Mal.';'Matthew'='Matt.';'Mt'='Matt.';'Mark'='Mark';'Luke'='Luke';'John'='John';'Acts'='Acts';'Romans'='Rom.';'1 Cor'='1 Cor.';'2 Cor'='2 Cor.';'Galatians'='Gal.';'Ephesians'='Eph.';'Philippians'='Phil.';'Colossians'='Col.';'1 Thessalonians'='1 Thess.';'2 Thessalonians'='2 Thess.';'1 Timothy'='1 Tim.';'2 Timothy'='2 Tim.';'Titus'='Titus';'Philemon'='Philem.';'Hebrews'='Heb.';'Heb'='Heb.';'James'='James';'1 Peter'='1 Pet.';'2 Peter'='2 Pet.';'1 John'='1 John';'2 John'='2 John';'3 John'='John';'Jude'='Jude';'Revelation'='Rev.';'Belgic Confession'='B.C.';'Heidelberg Catechism'='L.D.';'Canons of Dort'='C.D.';"Lord's Day"='L.D.'; "Lord’s Day"='L.D.'; 'Lords Day'='L.D.'; "Apostle's Creed"="Apostle's Creed";'Apostles Creed'="Apostles Creed"; 'Nicene Creed'='Nicene Creed';'Athanasian Creed'='Athanasian Creed'}
+$validReadings = @{'Gen'='Gen.';'Exodus'='Exodus';'Leviticus'='Lev.';'Numbers'='Num.';'Deuteronomy'='Deut.';'Joshua'='Joshua';'Judges'='Judges';'Ruth'='Ruth';'1 Sam'='1 Sam.';'2 Sam'='2 Sam.';'1 Kings'='1 Kings';'2 Kings'='2 Kings';'1 Chron'='1 Chron.';'2 Chron'='2 Chron.';'Ezra'='Ezra';'Nehemiah'='Neh.';'Esther'='Esther';'Job'='Job';'Psalm'='Psalms';'Prov'='Prov.';'Ecclesiastes'='Eccles.';'Eccl'='Eccles.';'Song of Solomon'='Song.';'Isaiah'='Isaiah';'Jeremiah'='Jer.';'Lamentations'='Lam.';'Ezekiel'='Ezek.';'Daniel'='Daniel';'Hosea'='Hosea';'Joel'='Joel';'Amos'='Amos';'Obadiah'='Obad.';'Jonah'='Jonah';'Michah'='Michah';'Nahum'='Nahum';'Habakkuk'='Hab.';'Zephaniah'='Zeph.';'Haggai'='Haggai';'Zechariah'='Zech.';'Malachi'='Mal.';'Matt'='Matt.';'Mt'='Matt.';'Mark'='Mark';'Luke'='Luke';'John'='John';'Acts'='Acts';'Romans'='Rom.';'1 Cor'='1 Cor.';'2 Cor'='2 Cor.';'Galatians'='Gal.';'Ephesians'='Eph.';'Philippians'='Phil.';'Colossians'='Col.';'1 Thessalonians'='1 Thess.';'2 Thessalonians'='2 Thess.';'1 Timothy'='1 Tim.';'2 Timothy'='2 Tim.';'Titus'='Titus';'Philemon'='Philem.';'Heb'='Heb.';'James'='James';'1 Peter'='1 Pet.';'2 Peter'='2 Pet.';'1 John'='1 John';'2 John'='2 John';'3 John'='John';'Jude'='Jude';'Rev'='Rev.';'Belgic Confession'='B.C.';'Heidelberg Catechism'='L.D.';'Canons of Dort'='C.D.';"Lord's Day"='L.D.'; "Lord’s Day"='L.D.'; 'Lords Day'='L.D.'; "Apostle's Creed"="Apostle's Creed";'Apostles Creed'="Apostles Creed"; 'Nicene Creed'='Nicene Creed';'Athanasian Creed'='Athanasian Creed'}
 
 
 #******************************
@@ -428,18 +435,29 @@ Param(
 
  } 
 
+<#
 Function Decode-Reading{
                 Param($row,$LiturgyItem,$previousItem)
                    #Could be Confession/Creed/Bible reading
-                if($validReadings.keys | where{$row -match $_}){
+                if($validReadings.keys | where{$row -match $_ -and ($row -notmatch 'Sing' -and $row -notmatch 'opening song')}){
                     #Bible Reading
-                    $validBoB = $validReadings.keys | where{$row -match $_}
+                    $validBoB = $validReadings.keys | where{$row -match "(\b$_)" -and $_ -notmatch 'John'}
+
+                    #Find reading of John/1 John/2 John/3 John
+                    $TestForJohn = [regex]::Match($row,'(?:[1-3]\s)*(John)')
+                    if($TestForJohn.Success){
+                        $validBobJohn = Do{$TestForJohn.value; $TestForJohn = $TestForJohn.NextMatch();}While($TestForJohn.value)
+                    }
+                    $validBob = $validBob + ($validReadings.keys | where{$_ -in $validBobJohn})
+
                     if($validBob.count -le 1){
-                        $ChapterandVerse = ($row.substring($row.indexof($validBob)+$validBob.length) -replace '\(.+\)|[^\d:-]') #-split ($validBoB) #Take all digit : or - after the matched book of the Bible, unless it is contained in parentheses ()
-                                    
+                        $sanitizedrow = $row -replace 'verse',':'
+                        #$ChapterandVerse = ($row.substring($row.indexof($validBob)+$validBob.length) -replace '\(.+\)|[^\d:-]') #-split ($validBoB) #Take all digit : or - after the matched book of the Bible, unless it is contained in parentheses ()
+                        $ChapterandVerse = ($sanitizedrow -split ($validBoB) | select -last 1) -replace '\(.+\)|[^\d,:-]'
                         $LiturgyItem.Title = $validReadings.$validBoB
                         
                         $liturgyItem.Value = $ChapterandVerse | select -first 1
+                        $liturgyItem.Value = $liturgyItem.Value  -replace 'verse',':' -replace ':',': ' -replace ',',', ' -replace '-',' - '
                         #Is there a previous reading...does it matter?
                         $LiturgyItem.Type = 'Reading'
                         if($liturgyItem.Value -match '\d'){
@@ -450,7 +468,7 @@ Function Decode-Reading{
                     }else{
                         #More than one reading match on this line
                         #how is it delimited? (probably ; or ,)
-                        $readings = $row -split ';'
+                        $readings = $row -replace 'verse',':' -split ';'
                         if($readings.count -eq 1){
                             $readings = $row -split ','
                         }
@@ -459,7 +477,8 @@ Function Decode-Reading{
                         }
                         if(($readings).count -ge 2){
                             ForEach($reading in $readings | Where{$_ -replace "\s+" -ne ""}){
-                                $validBoB = $validReadings.keys | where{$reading -match $_}
+                                $validBobList = $validBob
+                                $validBoB = $validBobList | where{$reading -match $_}
                                 $liturgyItem = $newItem.psobject.copy()
 
                                 #Is there a previous reading...does it matter?
@@ -486,7 +505,7 @@ Function Decode-Reading{
                                             $liturgyItem = $newItem.psobject.copy()
                                             $LiturgyItem.Type = $RowType
                                             $liturgyItem.Title = $validReadings.$validBoB
-                                            $liturgyItem.Value = $item
+                                            $liturgyItem.Value = $item  -replace 'verse',':' -replace ':',': ' -replace ',',', ' -replace '-',' - '
                                             if($liturgyItem.Value -match '\d'){
                                                 $liturgyItem
                                             }else{
@@ -497,7 +516,115 @@ Function Decode-Reading{
                                         #Only on match on book of bible in this line
                                         $LiturgyItem.Type = $RowType
                                         $liturgyItem.Title = $validReadings.$validBoB
-                                        $liturgyitem.Value = $ChapterandVerse
+                                        $liturgyitem.Value = $ChapterandVerse -replace ':',': ' -replace ',',', ' -replace '-',' - '
+                                        if($liturgyItem.Value -match '\d'){
+                                            $liturgyItem
+                                        }else{
+                                            write-warning "Unable to decipher reading: `"${item}`"...assuming theme/points"
+                                        }
+                                    }
+                                }
+                                                                
+                            }
+                        }
+                    }  
+                    $previousItem = $liturgyItem                  
+                }else{
+                    #What are we reading?
+                    write-warning "Unable to decipher reading: `"${row}`"...assuming theme/points"
+                    #Call function again?
+                }
+}
+#>
+
+Function Decode-Reading{
+Param($row)
+                $validReadings = @{'Gen'='Gen.';'Ex'='Exodus';'Lev'='Lev.';'Num'='Num.';'Deut'='Deut.';'Josh'='Joshua';'Judges'='Judges';'Ruth'='Ruth';'1 Sam'='1 Sam.';'2 Sam'='2 Sam.';'1 Kings'='1 Kings';'2 Kings'='2 Kings';'1 Chron'='1 Chron.';'2 Chron'='2 Chron.';'Ezra'='Ezra';'Neh'='Neh.';'Esther'='Esther';'Job'='Job';'Psalm'='Psalms';'Prov'='Prov.';'Eccl'='Eccles.';'Song of Solomon'='Song.';'Isaiah'='Isaiah';'Jer'='Jer.';'Lam'='Lam.';'Ezek'='Ezek.';'Dan'='Daniel';'Hosea'='Hosea';'Joel'='Joel';'Amos'='Amos';'Obad'='Obad.';'Jonah'='Jonah';'Micah'='Micah';'Nahum'='Nahum';'Hab'='Hab.';'Zeph'='Zeph.';'Haggai'='Haggai';'Zech'='Zech.';'Malachi'='Mal.';'Matt'='Matt.';'Mt'='Matt.';'Mark'='Mark';'Luke'='Luke';'John'='John';'Acts'='Acts';'Rom'='Rom.';'1 Cor'='1 Cor.';'2 Cor'='2 Cor.';'Gal'='Gal.';'Eph'='Eph.';'Philip'='Phil.';'Col'='Col.';'1 Thess'='1 Thess.';'2 Thess'='2 Thess.';'1 Tim'='1 Tim.';'2 Tim'='2 Tim.';'Titus'='Titus';'Philemon'='Philem.';'Heb'='Heb.';'James'='James';'1 Pet'='1 Pet.';'2 Pet'='2 Pet.';'1 John'='1 John';'2 John'='2 John';'3 John'='John';'Jude'='Jude';'Rev'='Rev.';'BC'='B.C.';'Belgic Confession'='B.C.';'Heidelberg Catechism'='L.D.';'Canons of Dort'='C.D.';"Lord's Day"='L.D.'; "Lord’s Day"='L.D.'; 'Lords Day'='L.D.'; 'LD'='L.D.'; "Apostle's Creed"="Apostle's Creed";'Apostles Creed'="Apostles Creed"; 'Nicene Creed'='Nicene Creed';'Athanasian Creed'='Athanasian Creed'}
+                $newitem = [pscustomobject]([ordered]@{'Type'='';'Title'='';'Value'=''})
+                $LiturgyItem = $newItem.psobject.copy()
+
+                   #Could be Confession/Creed/Bible reading
+                if($validReadings.keys | where{$row -match $_ -and ($row -notmatch 'Sing' -and $row -notmatch 'opening song')}){
+                    #Bible Reading
+                    $validBoBlist = [array]($validReadings.keys | where{$row -match "(\b$_)" -and $_ -notmatch 'John'})
+
+                    #Find reading of John/1 John/2 John/3 John
+                    $TestForJohn = [regex]::Match($row,'(?:[1-3]\s)*(John)')
+                    if($TestForJohn.Success){
+                        $validBobJohn = Do{$TestForJohn.value; $TestForJohn = $TestForJohn.NextMatch();}While($TestForJohn.value)
+                    }else{
+                        $validBobJohn = $null
+                    }
+                    $validBoblist = $validBoblist + ($validReadings.keys | where{$_ -in $validBobJohn})
+
+                    if($validBobList.count -eq 0){
+                        write-warning "Unable to decipher reading: `"${row}`"....Does not seem to properly match a valid reading"
+                    }elseif($validBoblist.count -eq 1){
+                        $sanitizedrow = $row -replace 'verse',':'
+                        #$ChapterandVerse = ($row.substring($row.indexof($validBob)+$validBob.length) -replace '\(.+\)|[^\d:-]') #-split ($validBoB) #Take all digit : or - after the matched book of the Bible, unless it is contained in parentheses ()
+                        $ChapterandVerse = ($sanitizedrow -split ($validBoBlist | select -first 1) | select -last 1) -replace '\(.+\)|[^\d,:-]'
+                        $LiturgyItem.Title = $validReadings.($validBoBlist  | select -first 1)
+                        
+                        $liturgyItem.Value = $ChapterandVerse | select -first 1
+                        $liturgyItem.Value = $liturgyItem.Value  -replace 'verse',':' -replace ':',': ' -replace ',',', ' -replace '-',' - '
+                        #Is there a previous reading...does it matter?
+                        $LiturgyItem.Type = 'Reading'
+                        if($liturgyItem.Value -match '\d'){
+                             $LiturgyItem
+                        }else{
+                            write-warning "Unable to decipher reading: `"${row}`"...assuming theme/points"
+                        }
+                    }else{
+                        #More than one reading match on this line
+                        #how is it delimited? (probably ; or ,)
+                        $readings = $row -replace 'verse',':' -split ';'
+                        if($readings.count -eq 1){
+                            $readings = $row -split ','
+                        }
+                        if($readings.count -eq 1){
+                            write-warning "Unable to parse reading ${row}  There appears to be more than 1, but not delimited by an expected character"
+                        }
+                        if(($readings).count -ge 2){
+                            ForEach($reading in $readings | Where{$_ -replace "\s+" -ne ""}){
+                                $validBoB = $validBobList | where{$reading -match $_}
+                                $liturgyItem = $newItem.psobject.copy()
+
+                                #Is there a previous reading...does it matter?
+                                $RowType = 'Reading'
+
+                                if(!$validBoB){
+                                    write-warning "Reading: $reading is ambiguous...assuming this is part of previous reading"
+                                    $LiturgyItem.Type = $RowType
+                                    $liturgyItem.Title = ''
+                                    
+                                    $liturgyItem.Value = $reading -replace '\(.+\)|[^\d:-]' #-split ($validBoB) #Take all digit : or - after the matched book of the Bible, unless it is contained in parentheses ()
+                                    if($liturgyItem.Value -match '\d'){
+                                        $liturgyItem
+                                    }else{
+                                        write-warning "Unable to decipher reading: `"${row}`"...assuming theme/points"
+                                    }
+                                }else{
+                                    #could add if here for Title -eq L.D. to take into account Q&A.... IE. L.D. 37 Q&A 42
+                                    #Improvement for later?
+                                    $ChapterandVerse = ($reading.substring($reading.indexof($validBob)+$validBob.length)  -replace '\(.+\)|[^\d:-]') #-split ($validBoB) #Take all digit : or - after the matched book of the Bible, unless it is contained in parentheses ()
+                                    
+                                    if($ChapterandVerse -gt 1){
+                                        ForEach($item in $chapterandverse){
+                                            $liturgyItem = $newItem.psobject.copy()
+                                            $LiturgyItem.Type = $RowType
+                                            $liturgyItem.Title = $validReadings.$validBoB
+                                            $liturgyItem.Value = $item  -replace 'verse',':' -replace ':',': ' -replace ',',', ' -replace '-',' - '
+                                            if($liturgyItem.Value -match '\d'){
+                                                $liturgyItem
+                                            }else{
+                                                write-warning "Unable to decipher reading: `"${item}`"...assuming theme/points"
+                                            }
+                                        }
+                                    }else{
+                                        #Only on match on book of bible in this line
+                                        $LiturgyItem.Type = $RowType
+                                        $liturgyItem.Title = $validReadings.$validBoB
+                                        $liturgyitem.Value = $ChapterandVerse -replace ':',': ' -replace ',',', ' -replace '-',' - '
                                         if($liturgyItem.Value -match '\d'){
                                             $liturgyItem
                                         }else{
@@ -520,6 +647,7 @@ Function Decode-Reading{
 Function ValidateLiturgy{
     #Arrays to hold Data
     $liturgyUnStructuredText = Read-MultiLineInputBoxDialog -Message "Please input liturgy for individual service in order" -WindowTitle 'Liturgy'
+    
     if(!$liturgyUnStructuredText){
         #Cancel clicked
         Return
@@ -534,6 +662,8 @@ Function ValidateLiturgy{
             $matchedrow = $false
             
             $LiturgyItem = $newItem.psobject.copy()
+            $row = $row -replace '\s+',' ' 
+        
             $rowWordSplit = $row -split '\W'
             if($i -eq '0' -and ($row -match 'Display' -or ($row -match 'Text')) -or ($row -match 'Display')){
                 
@@ -548,7 +678,8 @@ Function ValidateLiturgy{
                 if($validBoB){
                     #Valid Book of Bible found.  Set abbreviated title and value 
                     $LiturgyItem.Title = $validReadings.$validBoB
-                    $LiturgyItem.Value = ($row -split ($validBoB) | select -last 1) -replace '\(.+\)|[^\d:-]' #-split ($validBoB) #Take all digit : or - after the matched book of the Bible, unless it is contained in parentheses ()
+                    
+                    $LiturgyItem.Value = ($row -split ($validBoB) | select -last 1) -replace 'verse',':' -replace '\(.+\)|[^\d:-]' #-split ($validBoB) #Take all digit : or - after the matched book of the Bible, unless it is contained in parentheses ()
                     $matchedrow = $true
                 }else{
                     Write-warning 'Invalid Display text found'
@@ -558,11 +689,13 @@ Function ValidateLiturgy{
             }
             
 
-            if(($matchedrow -eq $false) -and ((($previousItem.Type -eq 'Reading') -and $row -match "^\s+" -and ($rowWordSplit | Where{$_ -in ($validReadings.keys)})) -or $row -match 'Reading' -or $row -match 'Sermon' -or $row -match 'Text' -or $row -match 'Read' -or $row -match 'Cat' -or ($rowWordSplit | Where{$_ -in ($validReadings.keys | where{$validReadings.$_ -ne 'Ps.'})}))){ #($rowWordSplit | Where{$_ -in $validReadings.keys}) this may be problematic if the theme contains the word 'Psalm' or songs?
+            if(($matchedrow -eq $false) -and ((($previousItem.Type -eq 'Reading') -and $row -match "^\s+" -and ($rowWordSplit | Where{$_ -in ($validReadings.keys)})) -or $row -match 'Reading' -or $row -match 'Scripture' -or $row -match 'Sermon' -or $row -match 'Text' -or $row -match 'Read' -or $row -match 'Cat' -or ($rowWordSplit | Where{$_ -in ($validReadings.keys | where{$validReadings.$_ -ne 'Ps.' -and ($_ -notmatch 'sing')})}))){ #($rowWordSplit | Where{$_ -in $validReadings.keys}) this may be problematic if the theme contains the word 'Psalm' or songs?
             #Reading
-                Decode-Reading -row $row -LiturgyItem $LiturgyItem -previousItem $previousItem | ForEach{
-                    $matchedrow = $true
-                    $_                    
+                if($row -notmatch '(?<!.)((\*|\s|Psalm)+)'){ #If the word Psalm appears and it has no preceding text (except white space or *) then it is probably singing not reading
+                    Decode-Reading -row $row -LiturgyItem $LiturgyItem -previousItem $previousItem | ForEach{
+                        $matchedrow = $true
+                        $_                   
+                    }
                 }
                 
             }
@@ -573,7 +706,7 @@ Function ValidateLiturgy{
                     $LiturgyItem.Type = 'Singing'
                     $SongBook = ($rowWordSplit | where{$_ -in $validSongs.keys})
                     $LiturgyItem.Title = $validSongs.$SongBook
-                    $LiturgyItem.Value = ($row -split $SongBook | select -last 1)  -replace '\s+' -replace '\.'
+                    $LiturgyItem.Value = ($row -split $SongBook | select -last 1) -replace 'and',',' -replace '\s+' -replace 'stanza',':' -replace '\.' -replace ':',': ' -replace ',',', ' -replace '-',' - '
                     $LiturgyItem
                     $matchedrow = $true
                 }
@@ -716,7 +849,7 @@ Function Generate-MainPPTX{
                     'include-headings'=$False
                     'include-footnotes'=$False
                     'include-verse-numbers'=$False
-                    'include-short-copyright'=$true
+                    'include-short-copyright'=$false
                     'include-passage-references'=$False
                 }
 
@@ -727,12 +860,24 @@ Function Generate-MainPPTX{
                     "Authorization" = "$CrosswayV3APIkey"
                 }
                 $jsonResponse = Invoke-RestMethod -Method Get -Uri $url -Headers $headers -Body $queryParams -UseBasicParsing
-                $DisplayText = [string]($jsonResponse.passages).TrimStart(' ')
+                $DisplayText = ([string]($jsonResponse.passages) -Replace "(\r|\n|\t|\s{2,})+", ' ').TrimStart(' ').TrimEnd(' ')
                 
                 if($DisplayText){
                     ForEach($slide in $slides){
                         ForEach($shape in $slide.Shapes){
                             $shape.TextFrame.TextRange.Replace('[Display Text]',$DisplayText) | out-null
+                            
+                            <# When replacing text, a new paragraph is created below the inserted text...we need to delete this.
+                            $replacedText = $shape.TextFrame.TextRange.Replace('[Display Text]','[Display Text2][SomethingToDelete]')
+                            $replacedText = $shape.TextFrame.TextRange.Replace('[Display Text2]',($DisplayText))
+                        
+                        
+                            if($replacedText){ #When Powerpoint replaces text, it adds a new paragraph...we need to delete it
+                                $paragraphtoDelete = $shape.TextFrame.textrange.Paragraphs() | where{$_.Text -match 'SomethingToDelete'}
+                                $paragraphtoDelete | %{$_.Delete()}          
+                            }
+                            #>
+
                             $shape.TextFrame.TextRange.Replace('[Display Text Reference]',$TextToLookup) | out-null
                            
 
@@ -758,14 +903,13 @@ Function Generate-MainPPTX{
                 ForEach($slide in $slides){
                     ForEach($shape in $slide.Shapes){
                         $replacedText = $null
-                        $replacedText = $shape.TextFrame.TextRange.Replace('[Theme]','[Theme2][SomethingToDelete]')
-                        $replacedText = $shape.TextFrame.TextRange.Replace('[Theme2]',$theme)
-                        
-                        
-                        if($replacedText){ #When Powerpoint replaces text, it adds a new paragraph...we need to delete it
-                            $paragraphtoDelete = $shape.TextFrame.textrange.Paragraphs() | where{$_.Text -match 'SomethingToDelete'}
-                            $paragraphtoDelete | %{$_.Delete()}          
+                        $fontsize = $shape.TextFrame.TextRange.Font.Size
+                        $replacedText = $shape.TextFrame.TextRange.Replace('[Theme]',$theme)
+                        if($replacedText){
+                            $shape.textframe.TextRange.Text = $shape.TextFrame.TextRange.Text -replace ("(\r|\n)$", '')
                         }
+                        
+                        
 
                     }
                 }
